@@ -1,5 +1,5 @@
 // @TODO: YOUR CODE HERE!
-var svgWidth = 960;
+var svgWidth = 900;
 var svgHeight = 500;
 
 var margin = {
@@ -13,16 +13,13 @@ var width = svgWidth - margin.left - margin.right;
 var height = svgHeight - margin.top - margin.bottom;
 var chart = d3.select("#scatter").append("div").classed("chart", true);
 
-// Create an SVG wrapper, append an SVG group that will hold our chart,
-// and shift the latter by left and top margins.
 var svg = d3
   .select("body")
   .append("svg")
   .attr("width", svgWidth)
   .attr("height", svgHeight);
 
-// Append an SVG group
-var chartGroup = svg.append("g")
+var chart = svg.append("g")
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
 d3.select("body")
@@ -30,11 +27,9 @@ d3.select("body")
     .attr("class", "tooltip")
     .style("opacity", 0);
 
-// Retrieve data from the CSV file and execute everything below
 d3.csv("data.csv").then(function(data, err) {
     if (err) throw err;
 console.log(healthData)
-      // parse data
     healthData.forEach(function(data) {
       data.poverty = +data.poverty;
       data.healthcare = +healthcare;
@@ -43,7 +38,6 @@ console.log(healthData)
     var xLinearScale = d3.scaleLinear().range([0, width]);
     var yLinearScale = d3.scaleLinear().range([height, 0]);
     
-    // Create initial axis functions
     var bottomAxis = d3.axisBottom(xLinearScale);
     var leftAxis = d3.axisLeft(yLinearScale);
   
@@ -74,18 +68,15 @@ console.log(healthData)
     console.log(xMin);
     console.log(yMax);
 
-    // append x axis
-    var xAxis = chartGroup.append("g")
+    var xAxis = chart.append("g")
       .classed("x-axis", true)
       .attr("transform", `translate(0, ${height})`)
       .call(bottomAxis);
   
-    // append y axis
-    chartGroup.append("g")
+    chart.append("g")
       .call(leftAxis);
   
-    // append initial circles
-    var circlesGroup = chartGroup.selectAll("circle")
+    var circles = chart.selectAll("circle")
       .data(healthData)
       .enter()
       .append("circle")
@@ -105,23 +96,18 @@ console.log(healthData)
         return (abbr + '%');
         });
        
-       chartGroup.call(toolTip);
-
-
-// Updating circles group with a transition to
-// new circles
+       chart.call(toolTip);
     
-    circlesGroup.call(toolTip);
+    circles.call(toolTip);
 
-    circlesGroup.on("mouseover", function(healthData) {
+    circles.on("mouseover", function(healthData) {
     toolTip.show(healthData);
     })
-    // onmouseout event
     .on("mouseout", function(healthData, index) {
         toolTip.hide(healthData);
     });
 
-    chartGroup.append("text")
+    chart.append("text")
     .style("font-size", "10px")
     .selectAll("tspan")
     .data(healthData)
@@ -137,7 +123,7 @@ console.log(healthData)
             return data.abbr
         });
 
-        chartGroup.append("text")
+        chart.append("text")
         .attr("transform", "rotate(-90)")
         .attr("y", 0 - margin.left + 40)
         .attr("x", 0 - (height / 1.5))
@@ -145,7 +131,7 @@ console.log(healthData)
         .attr("class", "axisText")
         .text("Lacks Healtcare(%)");
     
-      chartGroup.append("g")
+      chart.append("g")
         .attr("transform", `translate(${width / 1.5}, ${height + margin.top + 40})`)
         .attr("class", "axisText")
         .text("In Poverty (%)")
